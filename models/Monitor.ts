@@ -29,5 +29,8 @@ const MonitorSchema = new Schema<IMonitor>(
   { timestamps: true }
 );
 
-export default mongoose.models.Monitor ||
+const MonitorModel =
+  (mongoose.models.Monitor as mongoose.Model<IMonitor>) ||
   mongoose.model<IMonitor>("Monitor", MonitorSchema);
+
+export default MonitorModel;

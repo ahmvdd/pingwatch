@@ -1,14 +1,14 @@
 import cron from "node-cron";
 import axios from "axios";
 import { connectDB } from "./mongodb";
-import Monitor from "../models/Monitor";
+import Monitor, { IMonitor } from "../models/Monitor";
 import Check from "../models/Check";
 import User from "../models/User";
 import { sendDownAlert, sendUpAlert } from "./email";
 
 let isRunning = false;
 
-async function pingMonitor(monitor: InstanceType<typeof Monitor>) {
+async function pingMonitor(monitor: IMonitor) {
   const start = Date.now();
   let status: "UP" | "DOWN" = "DOWN";
   let statusCode = 0;

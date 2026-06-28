@@ -20,5 +20,8 @@ const CheckSchema = new Schema<ICheck>({
 
 CheckSchema.index({ monitorId: 1, checkedAt: -1 });
 
-export default mongoose.models.Check ||
+const CheckModel =
+  (mongoose.models.Check as mongoose.Model<ICheck>) ||
   mongoose.model<ICheck>("Check", CheckSchema);
+
+export default CheckModel;
