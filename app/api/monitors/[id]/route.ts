@@ -4,7 +4,7 @@ import { getUserFromRequest } from "@/lib/auth";
 import Monitor from "@/models/Monitor";
 import Check from "@/models/Check";
 
-type Params = { params: { id: string } };
+type Params = { params: Promise<{ id: string }> };
 
 async function getOwnedMonitor(req: NextRequest, id: string) {
   const user = getUserFromRequest(req);
@@ -14,20 +14,22 @@ async function getOwnedMonitor(req: NextRequest, id: string) {
 }
 
 export async function GET(req: NextRequest, { params }: Params) {
+  const { id } = await params;
   const user = getUserFromRequest(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const monitor = await getOwnedMonitor(req, params.id);
+  const monitor = await getOwnedMonitor(req, id);
   if (!monitor) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   return NextResponse.json(monitor);
 }
 
 export async function PATCH(req: NextRequest, { params }: Params) {
+  const { id } = await params;
   const user = getUserFromRequest(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const monitor = await getOwnedMonitor(req, params.id);
+  const monitor = await getOwnedMonitor(req, id);
   if (!monitor) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const { name, url, interval, isActive } = await req.json();
@@ -41,15 +43,16 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 }
 
 export async function DELETE(req: NextRequest, { params }: Params) {
+  const { id } = await params;
   const user = getUserFromRequest(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const monitor = await getOwnedMonitor(req, params.id);
+  const monitor = await getOwnedMonitor(req, id);
   if (!monitor) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   await Promise.all([
     monitor.deleteOne(),
-    Check.deleteMany({ monitorId: params.id }),
+    Check.deleteMany({ monitorId: id }),
   ]);
 
   return NextResponse.json({ message: "Deleted" });

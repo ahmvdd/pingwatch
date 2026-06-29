@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     }
 
     const token = signToken({ userId: user._id.toString(), email: user.email });
-    setAuthCookie(token);
+    await setAuthCookie(token);
 
     return NextResponse.json({
       user: { id: user._id, name: user.name, email: user.email },

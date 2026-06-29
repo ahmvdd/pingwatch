@@ -22,18 +22,21 @@ export function verifyToken(token: string): JWTPayload | null {
   }
 }
 
-export function setAuthCookie(token: string) {
-  cookies().set(COOKIE_NAME, token, {
+// In Next.js 15, cookies() is async
+export async function setAuthCookie(token: string) {
+  const cookieStore = await cookies();
+  cookieStore.set(COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
+    maxAge: 60 * 60 * 24 * 7,
     path: "/",
   });
 }
 
-export function clearAuthCookie() {
-  cookies().delete(COOKIE_NAME);
+export async function clearAuthCookie() {
+  const cookieStore = await cookies();
+  cookieStore.delete(COOKIE_NAME);
 }
 
 export function getTokenFromRequest(req: NextRequest): string | null {
